@@ -38,8 +38,64 @@ public class SwiftAdvImagePickerPlugin: NSObject, FlutterPlugin {
         registrar.addMethodCallDelegate(instance, channel: channel)
     }
     
+    
+    private func cameraPermission(result: @escaping FlutterResult)-> Void {
+        let hasPermission = checkPermission(permission: "Camera")
+        if (!hasPermission) {
+            AVCaptureDevice.requestAccess(for: AVMediaType.video) { granted in
+                if granted {
+                    self.finalResult(isGranted: true, result:result)
+                } else {
+                    self.finalResult(isGranted: false, result:result)
+                }
+            }
+        } else {
+              self.finalResult(isGranted: true, result:result)
+        }
+    }
+    
+    private func storagePermission(result: @escaping FlutterResult) -> Void {
+        let hasPermission = checkPermission(permission: "Storage")
+        if(!hasPermission) {
+            PHPhotoLibrary.requestAuthorization { status in
+                switch status {
+                case .authorized:
+                    self.finalResult(isGranted: true, result:result)
+                    break;
+                default:
+                 self.finalResult(isGranted: false, result:result)
+                  break;
+                }
+            }
+        } else {
+              self.finalResult(isGranted: true, result:result)
+        }
+    }
+    
+    private func checkPermission(permission : String) -> Bool {
+        var hasPermission: Bool!
+        if permission == "Storage" {
+            let status = PHPhotoLibrary.authorizationStatus()
+            hasPermission = status == PHAuthorizationStatus.authorized
+        } else if (permission == "Camera"){
+            let status = AVCaptureDevice.authorizationStatus(for: .video)
+            hasPermission = status == AVAuthorizationStatus.authorized
+        }
+        return hasPermission
+    }
+    
+    private func finalResult(isGranted: Bool, result: @escaping FlutterResult) -> Void {
+        result(isGranted)
+    }
+    
     public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
         switch (call.method) {
+        case "iosCameraPermission":
+            cameraPermission(result: result)
+            break;
+        case "iosStoragePermission":
+            storagePermission(result: result)
+            break;
         case "getAlbums":
 //            let vs = BSImagePickerViewController();
 //
@@ -222,7 +278,7 @@ public class SwiftAdvImagePickerPlugin: NSObject, FlutterPlugin {
             let options = PHImageRequestOptions()
             
             options.deliveryMode = PHImageRequestOptionsDeliveryMode.highQualityFormat
-            options.resizeMode = PHImageRequestOptionsResizeMode.exact
+            options.resizeMode = .fast
             options.isSynchronous = false
             options.isNetworkAccessAllowed = true
             

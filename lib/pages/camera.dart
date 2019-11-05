@@ -7,6 +7,7 @@ import 'package:adv_image_picker/adv_image_picker.dart';
 import 'package:adv_image_picker/models/result_item.dart';
 import 'package:adv_image_picker/pages/gallery.dart';
 import 'package:adv_image_picker/pages/result.dart';
+import 'package:adv_image_picker/toast.dart';
 import 'package:basic_components/components/adv_button.dart';
 import 'package:basic_components/components/adv_column.dart';
 import 'package:basic_components/components/adv_loading_with_barrier.dart';
@@ -14,6 +15,7 @@ import 'package:basic_components/components/adv_visibility.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:adv_image_picker/plugins/adv_image_picker_plugin.dart';
 
 class CameraPage extends StatefulWidget {
   final bool allowMultiple;
@@ -32,7 +34,8 @@ class CameraPage extends StatefulWidget {
 }
 
 void logError(String code, String message) =>
-    print('${AdvImagePicker.error}: $code\n${AdvImagePicker.errorMessage}: $message');
+    print('${AdvImagePicker.error}: $code\n${AdvImagePicker
+        .errorMessage}: $message');
 
 class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
   AdvCameraController controller;
@@ -80,11 +83,13 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                     margin: EdgeInsets.only(bottom: 8.0),
                     child: Text(
                       AdvImagePicker.photo,
-                      style: TextStyle(fontWeight: FontWeight.w700, fontSize: 12.0),
+                      style: TextStyle(
+                          fontWeight: FontWeight.w700, fontSize: 12.0),
                     )),
                 AdvVisibility(
                   visibility:
-                      widget.enableGallery ? VisibilityFlag.visible : VisibilityFlag.invisible,
+                  widget.enableGallery ? VisibilityFlag.visible : VisibilityFlag
+                      .invisible,
                   child: AdvButton.custom(
                     child: AdvColumn(divider: ColumnDivider(4.0), children: [
                       Text(AdvImagePicker.gallery),
@@ -93,14 +98,18 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
                     buttonSize: ButtonSize.small,
                     primaryColor: Colors.white,
                     accentColor: Colors.black87,
-                    onPressed: () {
-                      Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (BuildContext context) => GalleryPage(
-                                    allowMultiple: widget.allowMultiple,
-                                    maxSize: widget.maxSize,
-                                  )));
+                    onPressed: () async {
+                      if (Platform.isIOS) {
+                        bool hasPermission = await AdvImagePickerPlugin.iosStoragePermission();
+                        if (!hasPermission) {
+                          Toast.showToast(context, "Permission denied");
+                          return null;
+                        } else {
+                          goToGallery();
+                        }
+                      } else {
+                        goToGallery();
+                      }
                     },
                   ),
                 ),
@@ -127,10 +136,22 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
           width: 30.0,
           height: 30.0,
           decoration: BoxDecoration(
-              color: Colors.white, borderRadius: BorderRadius.all(Radius.circular(30.0))),
+              color: Colors.white,
+              borderRadius: BorderRadius.all(Radius.circular(30.0))),
         ),
       ),
     );
+  }
+
+  goToGallery() {
+    Navigator.push(
+        context,
+        MaterialPageRoute(
+            builder: (BuildContext context) =>
+                GalleryPage(
+                  allowMultiple: widget.allowMultiple,
+                  maxSize: widget.maxSize,
+                )));
   }
 
   Future<ByteData> _readFileByte(String filePath) async {
@@ -141,7 +162,8 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
       bytes = Uint8List.fromList(value);
       print('reading of bytes is completed');
     }).catchError((onError) {
-      print('Exception Error while reading audio from path:' + onError.toString());
+      print('Exception Error while reading audio from path:' +
+          onError.toString());
     });
     return bytes.buffer.asByteData();
   }
@@ -164,7 +186,11 @@ class _CameraPageState extends State<CameraPage> with WidgetsBindingObserver {
     );
   }
 
-  String timestamp() => DateTime.now().millisecondsSinceEpoch.toString();
+  String timestamp() =>
+      DateTime
+          .now()
+          .millisecondsSinceEpoch
+          .toString();
 
   void showInSnackBar(String message) {
     _scaffoldKey.currentState.showSnackBar(SnackBar(content: Text(message)));

@@ -6,10 +6,12 @@ import 'package:adv_image_picker/models/result_item.dart';
 import 'package:adv_image_picker/pages/camera.dart';
 import 'package:adv_image_picker/pages/gallery.dart';
 import 'package:adv_image_picker/plugins/adv_image_picker_plugin.dart';
+import 'package:adv_image_picker/toast.dart';
 import 'package:basic_components/basic_components.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:path_provider/path_provider.dart';
+
 
 class AdvImagePicker {
   static Color lightGrey = Color(0xffc6c6c6);
@@ -33,7 +35,7 @@ class AdvImagePicker {
 
   static Future<List<File>> pickImagesToFile(BuildContext context,
       {bool usingCamera = true,
-      bool usingGallery = true,
+        bool usingGallery = true,
         bool allowMultiple = true,
         int maxSize}) async {
     assert(usingCamera != false || usingGallery != false);
@@ -46,8 +48,23 @@ class AdvImagePicker {
       if (!hasPermission) return null;
     }
 
+    if (Platform.isIOS) {
+      bool hasPermission = false;
+      if (usingCamera) {
+        hasPermission = await AdvImagePickerPlugin.iosCameraPermission();
+      } else {
+        hasPermission = await AdvImagePickerPlugin.iosStoragePermission();
+      }
+      if (!hasPermission) {
+        Toast.showToast(context, "Permission denied");
+        return null;
+      }
+    }
+
     Widget advImagePickerHome = usingCamera
-        ? CameraPage(enableGallery: usingGallery, allowMultiple: allowMultiple, maxSize: maxSize)
+        ? CameraPage(enableGallery: usingGallery,
+        allowMultiple: allowMultiple,
+        maxSize: maxSize)
         : GalleryPage(allowMultiple: allowMultiple, maxSize: maxSize);
 
     List<File> files = [];
@@ -80,9 +97,9 @@ class AdvImagePicker {
 
   static Future<List<ByteData>> pickImagesToByte(BuildContext context,
       {bool usingCamera = true,
-      bool usingGallery = true,
-      bool allowMultiple = true,
-      int maxSize}) async {
+        bool usingGallery = true,
+        bool allowMultiple = true,
+        int maxSize}) async {
     assert(usingCamera != false || usingGallery != false);
 
     BasicComponents.loading.assetName = loadingAssetName;
@@ -93,8 +110,22 @@ class AdvImagePicker {
       if (!hasPermission) return null;
     }
 
+    if (Platform.isIOS) {
+      bool hasPermission = false;
+      if (usingCamera) {
+        hasPermission = await AdvImagePickerPlugin.iosCameraPermission();
+      } else {
+        hasPermission = await AdvImagePickerPlugin.iosStoragePermission();
+      }
+      if (!hasPermission) {
+        Toast.showToast(context, "Permission denied");
+        return null;
+      }
+    }
     Widget advImagePickerHome = usingCamera
-        ? CameraPage(enableGallery: usingGallery, allowMultiple: allowMultiple, maxSize: maxSize)
+        ? CameraPage(enableGallery: usingGallery,
+        allowMultiple: allowMultiple,
+        maxSize: maxSize)
         : GalleryPage(allowMultiple: allowMultiple, maxSize: maxSize);
 
     List<ByteData> datas = [];
@@ -114,5 +145,8 @@ class AdvImagePicker {
   }
 
   static String _timestamp() =>
-      DateTime.now().millisecondsSinceEpoch.toString();
+      DateTime
+          .now()
+          .millisecondsSinceEpoch
+          .toString();
 }
