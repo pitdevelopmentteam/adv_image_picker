@@ -114,4 +114,14 @@ class AdvImagePickerPlugin {
       return asset.toString();
     }).toList();
   }
+
+  static Future<bool> iosCameraPermission() async {
+    bool result = await _channel.invokeMethod("iosCameraPermission");
+    return result;
+  }
+
+  static Future<bool> iosStoragePermission() async {
+    bool result = await _channel.invokeMethod("iosStoragePermission");
+    return result;
+  }
 }
