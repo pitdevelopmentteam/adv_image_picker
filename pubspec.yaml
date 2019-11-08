@@ -11,7 +11,7 @@ dependencies:
   flutter:
     sdk: flutter
 
-  basic_components: ^0.0.3
+  basic_components: 0.0.4+5
   adv_camera: ^0.0.6
 #  camera:
 #    git:
