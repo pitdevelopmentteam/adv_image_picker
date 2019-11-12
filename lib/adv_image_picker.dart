@@ -19,7 +19,7 @@ class AdvImagePicker {
   static Color accentColor = Colors.blue;
   static int maxImage = 99;
   static String takePicture = "Take Picture";
-  static String rotate = "Rotate";
+  static String rotate = "Switch";
   static String photo = "Photo";
   static String gallery = "Gallery";
   static String unknownLensDirection = 'Unknown lens direction';
