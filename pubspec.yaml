@@ -13,6 +13,8 @@ dependencies:
 
   basic_components: ^0.0.4+5
   adv_camera: ^0.0.6
+  camera: ^0.5.7
+  flutter_exif_rotation: ^0.2.7
 #  camera:
 #    git:
 #      url: git://github.com/ricnaaru/plugins.git

@@ -5,6 +5,7 @@ import 'package:adv_camera/adv_camera.dart';
 import 'package:adv_image_picker/components/toast.dart';
 import 'package:adv_image_picker/models/result_item.dart';
 import 'package:adv_image_picker/pages/camera.dart';
+import 'package:adv_image_picker/pages/camera_flutter.dart';
 import 'package:adv_image_picker/pages/gallery.dart';
 import 'package:adv_image_picker/plugins/adv_image_picker_plugin.dart';
 import 'package:basic_components/basic_components.dart';
@@ -61,7 +62,7 @@ class AdvImagePicker {
     }
 
     Widget advImagePickerHome = usingCamera
-        ? CameraPage(enableGallery: usingGallery, allowMultiple: allowMultiple, maxSize: maxSize)
+        ? CameraFlutterPage(enableGallery: usingGallery, allowMultiple: allowMultiple, maxSize: maxSize)
         : GalleryPage(allowMultiple: allowMultiple, maxSize: maxSize);
 
     List<File> files = [];
@@ -121,7 +122,7 @@ class AdvImagePicker {
     }
 
     Widget advImagePickerHome = usingCamera
-        ? CameraPage(enableGallery: usingGallery, allowMultiple: allowMultiple, maxSize: maxSize)
+        ? CameraFlutterPage(enableGallery: usingGallery, allowMultiple: allowMultiple, maxSize: maxSize)
         : GalleryPage(allowMultiple: allowMultiple, maxSize: maxSize);
 
     List<ByteData> datas = [];
