@@ -10,11 +10,11 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-
-  basic_components: 
-    git:
-      url: git://github.com/Padimas-Inovasi-Teknologi/basic_components.git
-      ref: support_nemob
+  basic_components: ^0.0.4+5
+#  basic_components:
+#    git:
+#      url: git://github.com/Padimas-Inovasi-Teknologi/basic_components.git
+#      ref: support_nemob
   adv_camera: ^0.0.6
   camera: ^0.5.7
   flutter_exif_rotation: ^0.2.7
